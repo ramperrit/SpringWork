@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.databind.deser.impl.CreatorCandidate.Param;
+
 import lombok.Setter;
 import lombok.extern.log4j.Log4j;
 
@@ -81,6 +83,17 @@ public class BoardControllerTests {
 				).andReturn().getModelAndView().getViewName();
 		log.info(resultPage);
 	}
+	
+	@Test
+	public void testListPaging() throws Exception{
+		log.info(mockMvc.perform(
+				MockMvcRequestBuilders.get("/board/list")
+				.param("pageNum", "2")
+				.param("amount", "50"))
+				.andReturn().getModelAndView().getModelMap()
+				);
+	}
+	
 	
 	
 	
