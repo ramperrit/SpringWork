@@ -43,15 +43,16 @@
 	
 	<select id="getListWithPaging" resultType="org.zerock.domain.BoardVO">
 		<![CDATA[
-			select bno,title,content,writer,regdate,updatedate
+			select bno,title,content,writer,regdate,updatedate, replycnt
 			from(
 				select
 					/*+INDEX_DESC(tbl_board pk_board) */
-					rownum rn,bno,title,content,writer,regdate,updatedate
+					rownum rn,bno,title,content,writer,regdate,updatedate, replycnt
 				from
 					tbl_board
 				where
 		]]>
+		
 		<!-- 검색 -->
 			<trim prefix="(" suffix=") AND " prefixOverrides="OR">
 				<foreach item='type' collection="typeArr">
@@ -70,7 +71,6 @@
 					</trim>
 				</foreach>
 			</trim>
-				
 		
 		<![CDATA[
 				 rownum <= #{pageNum} * #{amount}
@@ -84,7 +84,9 @@
 		select count(*) from tbl_board where bno > 0
 	</select>
 	
-	
+	<update id="updateReplyCnt">
+		update tbl_board set replycnt = replycnt + #{amount} where bno = #{bno}
+	</update>
 	
 	
 	
