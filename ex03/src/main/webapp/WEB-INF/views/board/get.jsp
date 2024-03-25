@@ -4,7 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
 <%@ include file="../includes/header.jsp"%>
-
+<link rel="stylesheet" href="/resources/css/attach.css"/>
 <div class="row">
 	<div class="col-lg-12">
 		<h1 class="page-header">Board Read</h1>
@@ -31,34 +31,42 @@
 							type='hidden' name='keyword'
 							value='<c:out value="${cri.keyword }"/>'> <input
 							type='hidden' name='type' value='<c:out value="${cri.type }"/>'>
-
 					</div>
 				</form>
-
 				<div class="form-group">
 					<label>Title</label><input class="form-control" name='title'
 						value='<c:out value="${board.title }"/>' readonly="readonly">
 				</div>
-
 				<div class="form-group">
 					<label>Text area</label>
 					<textarea class="form-control" rows="3" name='content'
 						readonly="readonly"><c:out value="${board.content }" /></textarea>
 				</div>
-
 				<div class="form-group">
 					<label>Writer</label><input class="form-control" name='writer'
 						value='<c:out value="${board.writer }"/>' readonly="readonly">
 				</div>
-
 				<button data-oper='modify' class="btn btn-default">Modify</button>
 				<button data-oper='list' class="btn btn-info">List</button>
-
-
 			</div>
 		</div>
 	</div>
 </div>
+
+<div class="row">
+	<div class="col-lg-12">
+		<div class="panel panel-default">
+			<div class="panel-heading">Files</div>
+			<div class="panel-body">
+				<div class='uploadResult'>
+					<ul>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
 <div class='row'>
 	<div class="col-lg-12">
 		<div class="panel panel-default">
@@ -123,7 +131,9 @@
 	<!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
-
+<div class='bigPictureWrapper'>
+	<div class = 'bigPicture'></div>
+</div>
 
 
 <script src="/resources/js/reply.js"></script>
@@ -132,9 +142,16 @@
 	$(document)
 			.ready(
 					function() {
+						
+						var bno = '<c:out value = "${board.bno}"/>';
+						$.getJSON("/board/getAttachList", {bno: bno}, function(arr){
+							console.log(arr);
+						});
+						
+						
 						var bnoValue = '<c:out value="${board.bno}"/>';
 						var replyUL = $(".chat");
-
+						
 						showList(1);
 
 						function showList(page) {
@@ -316,8 +333,61 @@
 							pageNum = targetPageNum;
 							showList(pageNum);
 						});
+	
+						$.getJSON("/board/getAttachList", {bno:bno}, function(arr){
+							console.log(arr);
+							var str = "";
+							$(arr).each(function(i, attach){
+								if(attach.fileType){
+									var fileCallPath = encodeURIComponent(attach.uploadPath+"/s_"+attach.uuid+"_"+attach.fileName);
+									str += "<li data-path='"+attach.uploadPath+"'";
+									str += " data-uuid='"+attach.uuid+"' data-filename='"+attach.fileName+"'data-type='"+attach.fileType+"'"
+									str += "> <div>";
+									str += "<img src='/display?fileName=" + fileCallPath + "'>";
+									str += "</div>";
+									str + "</li>";
+								}else{
+									str += "<li ";
+									str += "data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"' data-filename='"+attach.fileName+"'data-type='"+attach.fileType+"'><div>";
+									str += "<span> " + attach.fileName + "</span>";
+									str += "<img src='/resources/img/attach.png'></a>";
+									str += "</div>";
+									str + "</li>";
+								}
+							});
+							$(".uploadResult ul").html(str);
+						})
+						
+						$(".uploadResult").on("click","li",function(e){
+							console.log("view image");
+							var liObj = $(this);
+							var path = encodeURIComponent(liObj.data("path")+"/"+liObj.data("uuid")+"_"+liObj.data("filename"));
+							if(liObj.data("type")){
+								showImage(path.replace(new RegExp(/\\/g),"/"));
+							}else{
+								self.location = "/download?fileName="+path
+							}
+						});
+						
+						$(".bigPictureWrapper").on("click",function(e){
+							$(".bigPicture").animate({width:'0%',height:'0%'}, 1000);
+							setTimeout(()=>{
+								$(this).hide();
+							}, 1000);
+						});
 
-					});
+						
+						
+						
+					});<!-- End of ready -->
+	
+						function showImage(fileCallPath){
+							
+							$(".bigPictureWrapper").css("display","flex").show();
+							$(".bigPicture")
+							.html("<img src='/display?fileName="+fileCallPath+"'>")
+							.animate({width:'100%', height:'100%'}, 1000);
+						}
 
 	//TEST
 	/*  	 

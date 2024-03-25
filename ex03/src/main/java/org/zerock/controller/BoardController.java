@@ -1,5 +1,12 @@
 package org.zerock.controller;
 
+
+
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,20 +14,23 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.zerock.domain.BoardAttachVO;
 import org.zerock.domain.BoardVO;
 import org.zerock.domain.Criteria;
 import org.zerock.domain.PageDTO;
 import org.zerock.service.BoardService;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
-@Log4j
 @RequestMapping("/board/*")
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
+	
 	
 	private final BoardService service;
 	
@@ -45,9 +55,15 @@ public class BoardController {
 	
 	@PostMapping("/register")
 	public String register(BoardVO board, RedirectAttributes rttr) {
+		log.info("==================================");
 		log.info("register: " + board);
+		if(board.getAttachList() != null) {
+			board.getAttachList().forEach(attach -> log.info(attach.toString()));
+		}
+		log.info("==================================");
 		service.register(board);
 		rttr.addFlashAttribute("result", board.getBno());
+		
 		return "redirect:/board/list";
 	}
 	
@@ -93,7 +109,12 @@ public class BoardController {
 		
 	}
 	
-	
+	@GetMapping(value = "/getAttachList", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@ResponseBody
+	public ResponseEntity<List<BoardAttachVO>> getAttachList(Long bno){
+		log.info("getAttachList" + bno);
+		return new ResponseEntity<>(service.getAttachList(bno), HttpStatus.OK);
+	}
 	
 	
 	
