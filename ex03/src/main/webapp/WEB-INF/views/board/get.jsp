@@ -350,13 +350,13 @@
 									str += "<li ";
 									str += "data-path='"+attach.uploadPath+"' data-uuid='"+attach.uuid+"' data-filename='"+attach.fileName+"'data-type='"+attach.fileType+"'><div>";
 									str += "<span> " + attach.fileName + "</span>";
-									str += "<img src='/resources/img/attach.png'></a>";
+									str += "<img src='/resources/img/attach2.png'></a>";
 									str += "</div>";
 									str + "</li>";
 								}
 							});
 							$(".uploadResult ul").html(str);
-						})
+						});
 						
 						$(".uploadResult").on("click","li",function(e){
 							console.log("view image");

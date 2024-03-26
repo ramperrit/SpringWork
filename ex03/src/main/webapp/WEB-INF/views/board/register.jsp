@@ -148,7 +148,7 @@
 					str += "<span> " + obj.fileName + "</span>";
 					str += "<button type='button' data-file=\'"+fileCallPath+"\' data-type='file' "
 					str += "class='btn btn-warning btn-circle'><i class='fa fa-times'></i></button><br>";
-					str += "<img src='/resources/img/attach.png'></a>";
+					str += "<img src='/resources/img/attach2.png'></a>";
 					str += "</div>";
 					str + "</li>";
 				}
