@@ -6,6 +6,9 @@
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 <bean id="customAccessDenied" class="org.zerock.security.CustomAccessDeniedHandler"></bean>
+<bean id="customLoginSuccess" class="org.zerock.security.CustomLoginSuccessHandler"></bean>
+<bean id="bcryptPasswordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+<bean id="customUserDetailsService" class="org.zerock.security.CustomUserDetailsService"></bean>
 
 	<security:http>
 		<security:intercept-url pattern="/sample/all" access="permitAll"/> 
@@ -16,37 +19,23 @@
 	<security:access-denied-handler ref="customAccessDenied"/>
 		
 	<!-- <security:form-login/> -->
-	<security:form-login login-page="/customLogin"/>
+	<security:form-login login-page="/customLogin" authentication-success-handler-ref="customLoginSuccess"/>
 		
+	<security:logout logout-url="/customLogout" invalidate-session="true" delete-cookies="remember-me,JSESSION_ID"/>
+	
+	<security:remember-me data-source-ref="dataSource" token-validity-seconds="604800"/>
+	
 	</security:http>
 	
 	<security:authentication-manager>
-		<security:authentication-provider>
-			<security:user-service>
-				<security:user name="member" password="{noop}member" authorities="ROLE_MEMBER"/>
-				<security:user name="admin" password="{noop}admin" authorities="ROLE_MEMBER, ROLE_ADMIN"/>
-			</security:user-service>
+	
+		<security:authentication-provider user-service-ref="customUserDetailsService">
+		
+			<security:password-encoder ref="bcryptPasswordEncoder"/>
+			
 		</security:authentication-provider>
+		
 	</security:authentication-manager>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 </beans>

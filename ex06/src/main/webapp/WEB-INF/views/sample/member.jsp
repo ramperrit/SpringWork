@@ -7,5 +7,6 @@
 </head>
 <body>
 <h1>member</h1>
+<a href="/customLogout">Logout</a>
 </body>
 </html>
